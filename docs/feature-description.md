@@ -30,10 +30,10 @@ https://13.209.5.165.nip.io
 https://13.209.5.165.nip.io/swagger-ui/swagger-ui/index.html
 
 # 배포 이미지
-<img width="979" height="920" alt="image" src="https://github.com/user-attachments/assets/860ab493-6f8e-4266-a351-bc5e7fb9486a" />
+<img width="979" height="920" alt="image" src="https://github.com/user-attachments/assets/a54b1ec9-5bfd-4c18-8587-2427832c6594" />
 
 # 성공 이미지 캡처
-<img width="979" height="920" alt="image" src="https://github.com/user-attachments/assets/a54b1ec9-5bfd-4c18-8587-2427832c6594" />
+<img width="979" height="920" alt="image" src="https://github.com/user-attachments/assets/d0e2dd4b-d8a6-44cd-ac69-2c2726e69ece" />
 
 # Dockerfile.md
 ## JDK 17 베이스 이미지 사용
