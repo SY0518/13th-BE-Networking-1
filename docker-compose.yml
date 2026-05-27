@@ -1,0 +1,47 @@
+version: '3.8'
+
+networks:
+  cotato-network:
+    driver: bridge
+volumes:
+  db-data:
+services:
+  cotato-db:
+    image: mysql:8.0
+    container_name: cotato-mysql-container
+    networks:
+      - cotato-network
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: cotato_db
+      MYSQL_ROOT_PASSWORD: secret_root_password
+      MYSQL_USER: cotato_user
+      MYSQL_PASSWORD: cotato_password
+    volumes:
+      - db-data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
+    restart: always
+
+  cotato-app:
+    build: .
+    container_name: cotato-app-container
+    networks:
+      - cotato-network
+    ports:
+      - "8080:8080"
+    depends_on:
+      cotato-db:
+        condition: service_healthy
+    environment:
+      DB_HOST: cotato-db
+      DB_NAME: cotato_db
+      DB_USERNAME: cotato_user
+      DB_PASSWORD: cotato_password
+    restart: always
