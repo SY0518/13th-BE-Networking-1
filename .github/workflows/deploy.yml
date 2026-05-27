@@ -19,7 +19,9 @@ jobs:
           distribution: 'temurin'
 
       - name: Build with Gradle
-        run: ./gradlew build -x test
+        run: |
+          chmod +x ./gradlew  # 이 줄을 추가하세요!
+          ./gradlew build -x test
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
