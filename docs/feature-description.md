@@ -33,7 +33,7 @@ https://13.209.5.165.nip.io/swagger-ui/swagger-ui/index.html
 <img width="979" height="920" alt="image" src="https://github.com/user-attachments/assets/860ab493-6f8e-4266-a351-bc5e7fb9486a" />
 
 # 성공 이미지 캡처
-<img width="979" height="920" alt="image" src="https://github.com/user-attachments/assets/8730f1e5-ec61-44af-97b0-be66a1269b05" />
+<img width="979" height="920" alt="image" src="https://github.com/user-attachments/assets/a54b1ec9-5bfd-4c18-8587-2427832c6594" />
 
 # Dockerfile.md
 ## JDK 17 베이스 이미지 사용
@@ -78,3 +78,20 @@ server_name 13.209.5.165.nip.io;
 1. .pem 키 파일 내용을 GitHub Secrets에 등록할 때 전체 내용(시작/종료 태그 포함)이 누락되거나 일부가 유실됨.
 2. EC2_USERNAME 설정값에 명령어 옵션(-u)이 잘못 포함됨.
 해결: .pem 파일의 전체 내용을 다시 복사하여 등록하고, EC2_USERNAME 값을 ubuntu로 정확히 수정함.
+
+## 이슈 4: 컨테이너 빌드 후 Swagger UI 404/500 에러
+문제: 배포 후 /swagger-ui/index.html 접근 시 404 발생, 이후 /v3/api-docs 호출 시 500 에러 발생.
+원인:
+1. 의존성 누락: build.gradle에 Swagger 의존성(springdoc-openapi)이 선언되지 않아 API 명세 생성 라이브러리가 빌드에 포함되지 않음.
+2. 버전 호환성: Spring Boot 3.4.x 환경에서 구버전(2.3.0) 라이브러리를 사용하여 내부 API 충돌(NoSuchMethodError) 발생.
+해결: springdoc-openapi-starter-webmvc-ui 버전을 2.8.5로 업그레이드하고, application-prod.yml에 패키지 스캔 경로를 명시하여 정상적으로 API를 수집하도록 수정.
+
+## 이슈 5: 브랜치 병합 중 코드 누락 및 충돌
+문제: feat/ApplicntManagement 브랜치 병합 중 코드 유실 및 build.gradle 충돌 발생.
+원인: 자동 병합 시 충돌(Conflict)이 발생했으나 해결하지 않고 진행하여 파일 시스템과 코드 상태 간 불일치 발생.
+해결: git merge --abort로 병합 상태를 초기화한 후, 충돌 파일을 직접 열어 중복 기호를 제거하고 의존성 코드를 수동 병합(Manual Resolve)하여 정합성 확보.
+
+## 이슈 6: 서버 환경 오염으로 인한 배포 버전 불일치
+문제: 최신 코드를 배포했음에도 이전 버전의 설정이 로드되거나 Swagger 문서에 API가 나타나지 않음.
+원인: Docker 컨테이너 재배포 시 이전 빌드의 이미지와 설정 파일이 캐시되어 서버 환경에 남아있음.
+해결: docker compose down 및 docker image prune -a -f 명령어를 통해 기존 이미지와 컨테이너를 완전히 삭제한 후 재배포하여 환경 클린업 수행.
